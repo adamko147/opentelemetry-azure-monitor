@@ -137,10 +137,11 @@ func newEnvelopeFromSpan(span *export.SpanData, process *Process) *Envelope {
 			if route != "" {
 				data.Name = fmt.Sprintf("%s %s", data.Name, route)
 				envelope.Tags["ai.operation.name"] = data.Name
-				props["request.name"] = data.Name
 			} else if path != "" {
-				props["request.name"] = fmt.Sprintf("%s %s", data.Name, path)
+				data.Name = fmt.Sprintf("%s %s", data.Name, route)
+				envelope.Tags["ai.operation.name"] = data.Name
 			}
+			props["request.name"] = data.Name
 		}
 		if url == "" && scheme != "" && host != "" && path != "" {
 			url = fmt.Sprintf("%s://%s/%s", scheme, host, strings.TrimLeft(path, "/"))

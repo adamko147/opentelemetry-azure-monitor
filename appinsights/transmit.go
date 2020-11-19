@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -24,7 +25,7 @@ type transmitError struct {
 type transmitResult struct {
 	Received   int              `json:"itemsReceived"`
 	Accepted   int              `json:"itemsAccepted"`
-	Errors     []*transmitError `json:"errors"`
+	Errors     []*transmitError `json:"errors,omitempty"`
 	retryAfter *time.Time
 }
 
@@ -33,6 +34,10 @@ func transmit(ctx context.Context, client *http.Client, endpoint string, envelop
 		client = http.DefaultClient
 	}
 	result := &transmitResult{}
+	defer func() {
+		b, _ := json.Marshal(result)
+		log.Println("appinsights", string(b))
+	}()
 	buf, err := json.Marshal(envelopes)
 	if err != nil {
 		return result, fmt.Errorf("%w: failed to marshall envelopes: %v", errTransmitFailed, err)
