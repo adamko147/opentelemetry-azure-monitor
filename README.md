@@ -26,7 +26,7 @@ import (
 	"log"
 
 	appinsights "github.com/adamko147/opentelemetry-azure-monitor/appinsights"
-	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
@@ -45,7 +45,7 @@ func main() {
 	defer shutdown()
 
 	ctx := context.Background()
-	tracer := global.Tracer("my-module")
+	tracer := otel.Tracer("my-module")
 	_, span := tracer.Start(ctx, "operation")
 	log.Println("Hello World")
 	span.SetStatus(codes.Ok, "Succeeded")

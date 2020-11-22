@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	trace "go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/codes"
 	export "go.opentelemetry.io/otel/sdk/export/trace"
 	"go.opentelemetry.io/otel/semconv"
+	trace "go.opentelemetry.io/otel/trace"
 )
 
 var (
@@ -126,7 +126,7 @@ func newEnvelopeFromSpan(span *export.SpanData, process *Process) *Envelope {
 				host = attr.Value.AsString()
 			case semconv.HTTPSchemeKey:
 				scheme = attr.Value.AsString()
-			case semconv.HTTPUrlKey:
+			case semconv.HTTPURLKey:
 				url = attr.Value.AsString()
 			case semconv.HTTPStatusCodeKey:
 				status = int(attr.Value.AsInt32())
@@ -180,7 +180,7 @@ func newEnvelopeFromSpan(span *export.SpanData, process *Process) *Envelope {
 				switch attr.Key {
 				case semconv.HTTPMethodKey:
 					method = attr.Value.AsString()
-				case semconv.HTTPUrlKey:
+				case semconv.HTTPURLKey:
 					url, _ = url.Parse(attr.Value.AsString())
 				case semconv.HTTPStatusCodeKey:
 					status = int(attr.Value.AsInt32())
