@@ -1,14 +1,15 @@
 package appinsights
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
 
-	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/label"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // Process contains the information exported to Azure Monitor about the source of the trace data.
@@ -118,7 +119,7 @@ func NewExporter(opts ...Option) (*Exporter, error) {
 
 // NewExportPipeline sets up a complete export pipeline
 // with the recommended setup for trace provider
-func NewExportPipeline(opts ...Option) (trace.TracerProvider, func(), error) {
+func NewExportPipeline(opts ...Option) (trace.TracerProvider, func(ctx context.Context) error, error) {
 	opts = append([]Option{WithConnectionStringFromEnv()}, opts...)
 	exporter, err := NewExporter(opts...)
 	if err != nil {
@@ -135,12 +136,12 @@ func NewExportPipeline(opts ...Option) (trace.TracerProvider, func(), error) {
 
 // InstallNewPipeline instantiates a NewExportPipeline with the
 // recommended configuration and registers it globally.
-func InstallNewPipeline(opts ...Option) (func(), error) {
+func InstallNewPipeline(opts ...Option) (func(context.Context) error, error) {
 	tp, shutdown, err := NewExportPipeline(opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	global.SetTracerProvider(tp)
+	otel.SetTracerProvider(tp)
 	return shutdown, nil
 }
