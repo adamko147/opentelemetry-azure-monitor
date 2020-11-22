@@ -119,7 +119,7 @@ func NewExporter(opts ...Option) (*Exporter, error) {
 
 // NewExportPipeline sets up a complete export pipeline
 // with the recommended setup for trace provider
-func NewExportPipeline(opts ...Option) (trace.TracerProvider, func(ctx context.Context) error, error) {
+func NewExportPipeline(opts ...Option) (trace.TracerProvider, func(context.Context) error, error) {
 	opts = append([]Option{WithConnectionStringFromEnv()}, opts...)
 	exporter, err := NewExporter(opts...)
 	if err != nil {
