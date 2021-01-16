@@ -28,19 +28,20 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
+
 	shutdown, err := appinsights.InstallNewPipeline(
 		appinsights.WithProcess(appinsights.Process{
 			ServiceName: "trace-demo",
 		}),
-		appinsights.WithInstrumentationKey('<instrumentation-key>')
+		appinsights.WithInstrumentationKey("<instrumentation-key>")
 		appinsights.WithSDK(sdktrace.Config{DefaultSampler: sdktrace.AlwaysSample()}),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer shutdown()
+	defer shutdown(ctx)
 
-	ctx := context.Background()
 	tracer := otel.Tracer("my-module")
 	_, span := tracer.Start(ctx, "operation")
 	log.Println("Hello World")
