@@ -19,7 +19,7 @@ type Exporter struct {
 }
 
 // ExportSpans exports span data to Azure Monitor
-func (e *Exporter) ExportSpans(ctx context.Context, spans []*export.SpanData) error {
+func (e *Exporter) ExportSpans(ctx context.Context, spans []*export.SpanSnapshot) error {
 	envelopes := make([]*Envelope, len(spans))
 	for i, span := range spans {
 		envelopes[i] = newEnvelopeFromSpan(span, &e.process)

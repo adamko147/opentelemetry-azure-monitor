@@ -83,7 +83,7 @@ func fmtDuration(duration time.Duration) string {
 }
 
 // NewEnvelope creates new envelope
-func newEnvelopeFromSpan(span *export.SpanData, process *Process) *Envelope {
+func newEnvelopeFromSpan(span *export.SpanSnapshot, process *Process) *Envelope {
 	envelope := &Envelope{
 		Ver: 1,
 		Tags: map[string]string{
