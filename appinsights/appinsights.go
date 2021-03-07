@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -15,7 +15,7 @@ import (
 // Process contains the information exported to Azure Monitor about the source of the trace data.
 type Process struct {
 	ServiceName string
-	Tags        []label.KeyValue
+	Tags        []attribute.KeyValue
 }
 
 // Option is type definion for WithXxx functions

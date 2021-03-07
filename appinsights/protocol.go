@@ -129,7 +129,7 @@ func newEnvelopeFromSpan(span *export.SpanSnapshot, process *Process) *Envelope 
 			case semconv.HTTPURLKey:
 				url = attr.Value.AsString()
 			case semconv.HTTPStatusCodeKey:
-				status = int(attr.Value.AsInt32())
+				status = int(attr.Value.AsInt64())
 			}
 		}
 		if method != "" {
@@ -183,7 +183,7 @@ func newEnvelopeFromSpan(span *export.SpanSnapshot, process *Process) *Envelope 
 				case semconv.HTTPURLKey:
 					url, _ = url.Parse(attr.Value.AsString())
 				case semconv.HTTPStatusCodeKey:
-					status = int(attr.Value.AsInt32())
+					status = int(attr.Value.AsInt64())
 				}
 			}
 			if url != nil {

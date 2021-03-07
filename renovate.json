@@ -1,5 +1,11 @@
 {
   "extends": [
     "config:base"
+  ],
+  "packageRules": [
+    {
+      "packagePatterns": ["opentelemetry"],
+      "groupName": "open-telemetry"
+    }
   ]
 }
