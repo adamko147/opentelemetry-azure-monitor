@@ -100,10 +100,10 @@ func parseConnectionString(cs string) (endpoint, ikey string, err error) {
 	return
 }
 
-// WithSDK sets the SDK config for the exporter pipeline.
-func WithSDK(config sdktrace.Config) Option {
+// WithOptions sets the TracerProviderOptions for the exporter pipeline.
+func WithOptions(c ...sdktrace.TracerProviderOption) Option {
 	return func(e *Exporter) {
-		e.config = config
+		e.tracerOpts = append(e.tracerOpts, c...)
 	}
 }
 
@@ -127,10 +127,9 @@ func NewExportPipeline(opts ...Option) (trace.TracerProvider, func(context.Conte
 	}
 
 	bsp := sdktrace.NewBatchSpanProcessor(exporter)
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithSpanProcessor(bsp),
-		sdktrace.WithConfig(exporter.config),
-	)
+	tpo := []sdktrace.TracerProviderOption{sdktrace.WithSpanProcessor(bsp)}
+	tpo = append(tpo, exporter.tracerOpts...)
+	tp := sdktrace.NewTracerProvider(tpo...)
 	return tp, bsp.Shutdown, nil
 }
 

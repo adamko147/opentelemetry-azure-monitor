@@ -12,7 +12,7 @@ import (
 // Exporter is an implementation of an OTel SpanSyncer that uploads spans to Azure Monitor
 type Exporter struct {
 	process            Process
-	config             sdktrace.Config
+	tracerOpts         []sdktrace.TracerProviderOption
 	instrumentationKey string
 	ingestionEndpoint  string
 	storage            []*Envelope
