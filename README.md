@@ -35,7 +35,9 @@ func main() {
 			ServiceName: "trace-demo",
 		}),
 		appinsights.WithInstrumentationKey("<instrumentation-key>")
-		appinsights.WithSDK(sdktrace.Config{DefaultSampler: sdktrace.AlwaysSample()}),
+		appinsights.WithOptions(
+			sdktrace.WithSampler(sdktrace.AlwaysSample()),
+		),
 	)
 	if err != nil {
 		log.Fatal(err)
