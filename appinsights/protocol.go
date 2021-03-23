@@ -94,7 +94,7 @@ func newEnvelopeFromSpan(span *export.SpanSnapshot, process *Process) *Envelope 
 		},
 		Time: span.StartTime.UTC().Format("2006-01-02T15:04:05.000000Z"),
 	}
-	envelope.Tags["ai.operation.id"] = span.SpanContext.TraceID.String()
+	envelope.Tags["ai.operation.id"] = span.SpanContext.TraceID().String()
 	if span.ParentSpanID.IsValid() {
 		envelope.Tags["ai.operation.parentId"] = span.ParentSpanID.String()
 	}
@@ -107,7 +107,7 @@ func newEnvelopeFromSpan(span *export.SpanSnapshot, process *Process) *Envelope 
 		envelope.Name = "Microsoft.Applicationappinsights.Request"
 		data := &RequestData{
 			Ver:          2,
-			ID:           span.SpanContext.SpanID.String(),
+			ID:           span.SpanContext.SpanID().String(),
 			Duration:     fmtDuration(span.EndTime.Sub(span.StartTime)),
 			ResponseCode: fmt.Sprintf("%d", span.StatusCode),
 			Success:      span.StatusCode == codes.Ok,
@@ -166,7 +166,7 @@ func newEnvelopeFromSpan(span *export.SpanSnapshot, process *Process) *Envelope 
 		data := &RemoteDependencyData{
 			Ver:        2,
 			Name:       span.Name,
-			ID:         span.SpanContext.SpanID.String(),
+			ID:         span.SpanContext.SpanID().String(),
 			ResultCode: fmt.Sprintf("%d", span.StatusCode),
 			Duration:   fmtDuration(span.EndTime.Sub(span.StartTime)),
 			Type:       "InProc",
