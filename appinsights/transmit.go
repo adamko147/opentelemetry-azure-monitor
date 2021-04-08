@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 )
@@ -34,10 +33,13 @@ func transmit(ctx context.Context, client *http.Client, endpoint string, envelop
 		client = http.DefaultClient
 	}
 	result := &transmitResult{}
-	defer func() {
-		b, _ := json.Marshal(result)
-		log.Println("appinsights", string(b))
-	}()
+
+	// skip logging for now, handle using Logger interface later
+	// defer func() {
+	// 	b, _ := json.Marshal(result)
+	// 	log.Println("appinsights", string(b))
+	// }()
+
 	buf, err := json.Marshal(envelopes)
 	if err != nil {
 		return result, fmt.Errorf("%w: failed to marshall envelopes: %v", errTransmitFailed, err)
