@@ -5,21 +5,20 @@ import (
 	"errors"
 	"log"
 
-	export "go.opentelemetry.io/otel/sdk/export/trace"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 // Exporter is an implementation of an OTel SpanSyncer that uploads spans to Azure Monitor
 type Exporter struct {
 	process            Process
-	tracerOpts         []sdktrace.TracerProviderOption
+	tracerOpts         []trace.TracerProviderOption
 	instrumentationKey string
 	ingestionEndpoint  string
 	storage            []*Envelope
 }
 
 // ExportSpans exports span data to Azure Monitor
-func (e *Exporter) ExportSpans(ctx context.Context, spans []*export.SpanSnapshot) error {
+func (e *Exporter) ExportSpans(ctx context.Context, spans []*trace.SpanSnapshot) error {
 	envelopes := make([]*Envelope, len(spans))
 	for i, span := range spans {
 		envelopes[i] = newEnvelopeFromSpan(span, &e.process)

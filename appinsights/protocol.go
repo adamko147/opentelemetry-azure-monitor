@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel/codes"
-	export "go.opentelemetry.io/otel/sdk/export/trace"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/semconv"
 	trace "go.opentelemetry.io/otel/trace"
 )
@@ -83,7 +83,7 @@ func fmtDuration(duration time.Duration) string {
 }
 
 // NewEnvelope creates new envelope
-func newEnvelopeFromSpan(span *export.SpanSnapshot, process *Process) *Envelope {
+func newEnvelopeFromSpan(span *sdktrace.SpanSnapshot, process *Process) *Envelope {
 	envelope := &Envelope{
 		Ver: 1,
 		Tags: map[string]string{
@@ -95,8 +95,8 @@ func newEnvelopeFromSpan(span *export.SpanSnapshot, process *Process) *Envelope 
 		Time: span.StartTime.UTC().Format("2006-01-02T15:04:05.000000Z"),
 	}
 	envelope.Tags["ai.operation.id"] = span.SpanContext.TraceID().String()
-	if span.ParentSpanID.IsValid() {
-		envelope.Tags["ai.operation.parentId"] = span.ParentSpanID.String()
+	if span.Parent.IsValid() {
+		envelope.Tags["ai.operation.parentId"] = span.Parent.SpanID().String()
 	}
 	props := make(map[string]string, len(span.Attributes))
 	for _, a := range span.Attributes {
