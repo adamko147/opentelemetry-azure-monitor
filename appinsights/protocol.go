@@ -9,7 +9,7 @@ import (
 
 	"go.opentelemetry.io/otel/codes"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/semconv"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	trace "go.opentelemetry.io/otel/trace"
 )
 
@@ -83,7 +83,7 @@ func fmtDuration(duration time.Duration) string {
 }
 
 // NewEnvelope creates new envelope
-func newEnvelopeFromSpan(span *sdktrace.SpanSnapshot, process *Process) *Envelope {
+func newEnvelopeFromSpan(span sdktrace.ReadOnlySpan, process *Process) *Envelope {
 	envelope := &Envelope{
 		Ver: 1,
 		Tags: map[string]string{
@@ -92,29 +92,29 @@ func newEnvelopeFromSpan(span *sdktrace.SpanSnapshot, process *Process) *Envelop
 			"ai.device.id":          hostname,
 			"ai.device.osVersion":   platform,
 		},
-		Time: span.StartTime.UTC().Format("2006-01-02T15:04:05.000000Z"),
+		Time: span.StartTime().UTC().Format("2006-01-02T15:04:05.000000Z"),
 	}
-	envelope.Tags["ai.operation.id"] = span.SpanContext.TraceID().String()
-	if span.Parent.IsValid() {
-		envelope.Tags["ai.operation.parentId"] = span.Parent.SpanID().String()
+	envelope.Tags["ai.operation.id"] = span.SpanContext().TraceID().String()
+	if span.Parent().IsValid() {
+		envelope.Tags["ai.operation.parentId"] = span.Parent().SpanID().String()
 	}
-	props := make(map[string]string, len(span.Attributes))
-	for _, a := range span.Attributes {
+	props := make(map[string]string, len(span.Attributes()))
+	for _, a := range span.Attributes() {
 		props[string(a.Key)] = a.Value.AsString()
 	}
 
-	if span.SpanKind == trace.SpanKindConsumer || span.SpanKind == trace.SpanKindServer {
+	if span.SpanKind() == trace.SpanKindConsumer || span.SpanKind() == trace.SpanKindServer {
 		envelope.Name = "Microsoft.Applicationappinsights.Request"
 		data := &RequestData{
 			Ver:          2,
-			ID:           span.SpanContext.SpanID().String(),
-			Duration:     fmtDuration(span.EndTime.Sub(span.StartTime)),
-			ResponseCode: fmt.Sprintf("%d", span.StatusCode),
-			Success:      span.StatusCode == codes.Ok,
+			ID:           span.SpanContext().SpanID().String(),
+			Duration:     fmtDuration(span.EndTime().Sub(span.StartTime())),
+			ResponseCode: fmt.Sprintf("%d", span.Status().Code),
+			Success:      span.Status().Code == codes.Ok,
 		}
 		var method, route, url, host, path, scheme string
 		status := -1
-		for _, attr := range span.Attributes {
+		for _, attr := range span.Attributes() {
 			switch attr.Key {
 			case semconv.HTTPMethodKey:
 				method = attr.Value.AsString()
@@ -165,18 +165,18 @@ func newEnvelopeFromSpan(span *sdktrace.SpanSnapshot, process *Process) *Envelop
 		envelope.Name = remoteDependency
 		data := &RemoteDependencyData{
 			Ver:        2,
-			Name:       span.Name,
-			ID:         span.SpanContext.SpanID().String(),
-			ResultCode: fmt.Sprintf("%d", span.StatusCode),
-			Duration:   fmtDuration(span.EndTime.Sub(span.StartTime)),
+			Name:       span.Name(),
+			ID:         span.SpanContext().SpanID().String(),
+			ResultCode: fmt.Sprintf("%d", span.Status().Code),
+			Duration:   fmtDuration(span.EndTime().Sub(span.StartTime())),
 			Type:       "InProc",
-			Success:    span.StatusCode == codes.Ok,
+			Success:    span.Status().Code == codes.Ok,
 		}
-		if span.SpanKind == trace.SpanKindClient || span.SpanKind == trace.SpanKindProducer {
+		if span.SpanKind() == trace.SpanKindClient || span.SpanKind() == trace.SpanKindProducer {
 			var method string
 			var url *url.URL
 			status := -1
-			for _, attr := range span.Attributes {
+			for _, attr := range span.Attributes() {
 				switch attr.Key {
 				case semconv.HTTPMethodKey:
 					method = attr.Value.AsString()
