@@ -1,3 +1,6 @@
+> **⚠ WARNING: This repository is no longer updated.**  
+> To export tracing to Azure Monitor, consider using opentelemetry collector and [azuremonitorexporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azuremonitorexporter)
+
 # OpenTelemetry Azure Monitor
 
 ## Installation
